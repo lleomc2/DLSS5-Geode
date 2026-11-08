@@ -5,7 +5,40 @@
   },
   "id": "lleomc2.dlss5-geode",
   "name": "DLSS5 Geode",
-  "version": "v0.1.0",
+  "version": "v0.2.0",
   "developer": "lleomc2",
-  "description": "Experimental real-time visual effects inspired by modern rendering. Not NVIDIA DLSS."
+  "description": "DLSS-inspired real-time color grading, bloom-style highlight lift and cinematic vignette for Android.",
+  "settings": {
+    "visual-title": {
+      "type": "title",
+      "name": "DLSS5 Visual Engine",
+      "description": "A lightweight visual recreation inspired by modern rendering."
+    },
+    "enabled": {
+      "type": "bool",
+      "name": "Enable visual effects",
+      "description": "Turns the visual filter on or off during gameplay.",
+      "default": true
+    },
+    "intensity": {
+      "type": "float",
+      "name": "Effect intensity",
+      "description": "Controls color grading, bloom-style lift and vignette strength.",
+      "default": 65,
+      "min": 0,
+      "max": 100,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "color-style": {
+      "type": "string",
+      "name": "Color profile",
+      "description": "Choose the overall color tone of the visual filter.",
+      "default": "Cyan",
+      "one-of": ["Cyan", "Violet", "Warm", "Neutral"]
+    }
+  }
 }
