@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/PauseLayer.hpp>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -213,6 +214,64 @@ class $modify(DLSS5PlayLayer, PlayLayer) {
 
         drawPlayerAura(m_player1, m_fields->player1Trail, m_fields->player1TrailCount);
         drawPlayerAura(m_player2, m_fields->player2Trail, m_fields->player2TrailCount);
+    }
+};
+
+
+
+class $modify(DLSS5PauseLayer, PauseLayer) {
+    struct Fields {
+        cocos2d::CCLabelBMFont* qualityLabel = nullptr;
+    };
+
+    bool init(bool unfocused) {
+        if (!PauseLayer::init(unfocused)) {
+            return false;
+        }
+
+        auto winSize = CCDirector::get()->getWinSize();
+        auto quality = Mod::get()->getSettingValue<std::string>("quality");
+        auto label = CCLabelBMFont::create(
+            ("RTX: " + quality).c_str(),
+            "bigFont.fnt"
+        );
+        if (!label) {
+            return true;
+        }
+
+        label->setScale(0.58f);
+        m_fields->qualityLabel = label;
+
+        auto item = CCMenuItemLabel::create(
+            label,
+            this,
+            menu_selector(DLSS5PauseLayer::onCycleDLSS5Quality)
+        );
+        if (!item) {
+            return true;
+        }
+
+        auto menu = CCMenu::create();
+        if (!menu) {
+            return true;
+        }
+        menu->setID("dlss5-pause-settings-menu");
+        menu->addChild(item);
+        menu->setPosition({winSize.width * 0.5f, 25.f});
+        addChild(menu, 10000);
+        return true;
+    }
+
+    void onCycleDLSS5Quality(CCObject*) {
+        auto current = Mod::get()->getSettingValue<std::string>("quality");
+        std::string next = "Ultra";
+        if (current == "Ultra") next = "Balanced";
+        else if (current == "Balanced") next = "Performance";
+
+        Mod::get()->setSettingValue<std::string>("quality", next);
+        if (m_fields->qualityLabel) {
+            m_fields->qualityLabel->setString(("RTX: " + next).c_str());
+        }
     }
 };
 
