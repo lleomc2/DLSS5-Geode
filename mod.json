@@ -5,14 +5,14 @@
   },
   "id": "lleomc2.dlss5-geode",
   "name": "DLSS5 Geode",
-  "version": "v0.2.0",
+  "version": "v0.3.0",
   "developer": "lleomc2",
-  "description": "DLSS-inspired real-time color grading, bloom-style highlight lift and cinematic vignette for Android.",
+  "description": "RTX-inspired cinematic visual effects for Geometry Dash: animated player aura, energy trails, light shafts, color grading and mobile quality profiles.",
   "settings": {
     "visual-title": {
       "type": "title",
       "name": "DLSS5 Visual Engine",
-      "description": "A lightweight visual recreation inspired by modern rendering."
+      "description": "Cinematic rendering-inspired visual engine for Android."
     },
     "enabled": {
       "type": "bool",
@@ -38,7 +38,35 @@
       "name": "Color profile",
       "description": "Choose the overall color tone of the visual filter.",
       "default": "Cyan",
-      "one-of": ["Cyan", "Violet", "Warm", "Neutral"]
+      "one-of": [
+        "Cyan",
+        "Violet",
+        "Warm",
+        "Neutral"
+      ]
+    },
+    "quality": {
+      "type": "string",
+      "name": "Graphics quality",
+      "description": "Choose the visual workload. Ultra adds more glow rings and light shafts; Performance reduces overlays.",
+      "default": "Balanced",
+      "one-of": [
+        "Performance",
+        "Balanced",
+        "Ultra"
+      ]
+    },
+    "player-aura": {
+      "type": "bool",
+      "name": "Player aura and highlights",
+      "description": "Adds additive glow rings and a bright rim streak around visible players.",
+      "default": true
+    },
+    "light-rays": {
+      "type": "bool",
+      "name": "Volumetric-style light shafts",
+      "description": "Adds subtle animated light beams in the background.",
+      "default": true
     }
   }
 }
