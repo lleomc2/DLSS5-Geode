@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <algorithm>
 #include <cmath>
 
 using namespace geode::prelude;
@@ -9,6 +10,10 @@ class $modify(DLSS5PlayLayer, PlayLayer) {
         CCNode* visualLayer = nullptr;
         CCLayerColor* colorGrade = nullptr;
         CCLayerColor* bloomWash = nullptr;
+        CCLayerColor* vignetteTop = nullptr;
+        CCLayerColor* vignetteBottom = nullptr;
+        CCLayerColor* vignetteLeft = nullptr;
+        CCLayerColor* vignetteRight = nullptr;
         float elapsed = 0.f;
     };
 
@@ -17,49 +22,38 @@ class $modify(DLSS5PlayLayer, PlayLayer) {
             return false;
         }
 
-        auto size = CCDirector::get()->getWinSize();
+        const auto size = CCDirector::get()->getWinSize();
         m_fields->visualLayer = CCNode::create();
         m_fields->visualLayer->setID("dlss5-visual-layer");
         addChild(m_fields->visualLayer, 9999);
 
-        // A subtle full-screen grade provides the first post-processing-style pass.
-        m_fields->colorGrade = CCLayerColor::create(
-            ccc4(20, 190, 255, 255), size.width, size.height
-        );
+        m_fields->colorGrade = CCLayerColor::create(ccc4(20, 190, 255, 255), size.width, size.height);
         m_fields->colorGrade->setAnchorPoint({0.f, 0.f});
         m_fields->colorGrade->setPosition({0.f, 0.f});
         m_fields->colorGrade->setOpacity(0);
         m_fields->visualLayer->addChild(m_fields->colorGrade);
 
-        // A very light animated wash imitates the broad highlight lift of bloom.
-        m_fields->bloomWash = CCLayerColor::create(
-            ccc4(220, 245, 255, 255), size.width, size.height
-        );
+        m_fields->bloomWash = CCLayerColor::create(ccc4(220, 245, 255, 255), size.width, size.height);
         m_fields->bloomWash->setAnchorPoint({0.f, 0.f});
         m_fields->bloomWash->setPosition({0.f, 0.f});
         m_fields->bloomWash->setOpacity(0);
         m_fields->visualLayer->addChild(m_fields->bloomWash);
 
-        // Thin edge shading gives the image a restrained cinematic vignette.
-        auto top = CCLayerColor::create(ccc4(0, 0, 0, 255), size.width, 14.f);
-        top->setPosition({0.f, size.height - 14.f});
-        top->setOpacity(0);
-        m_fields->visualLayer->addChild(top);
+        m_fields->vignetteTop = CCLayerColor::create(ccc4(0, 0, 0, 255), size.width, 14.f);
+        m_fields->vignetteTop->setPosition({0.f, size.height - 14.f});
+        m_fields->visualLayer->addChild(m_fields->vignetteTop);
 
-        auto bottom = CCLayerColor::create(ccc4(0, 0, 0, 255), size.width, 14.f);
-        bottom->setPosition({0.f, 0.f});
-        bottom->setOpacity(0);
-        m_fields->visualLayer->addChild(bottom);
+        m_fields->vignetteBottom = CCLayerColor::create(ccc4(0, 0, 0, 255), size.width, 14.f);
+        m_fields->vignetteBottom->setPosition({0.f, 0.f});
+        m_fields->visualLayer->addChild(m_fields->vignetteBottom);
 
-        auto left = CCLayerColor::create(ccc4(0, 0, 0, 255), 10.f, size.height);
-        left->setPosition({0.f, 0.f});
-        left->setOpacity(0);
-        m_fields->visualLayer->addChild(left);
+        m_fields->vignetteLeft = CCLayerColor::create(ccc4(0, 0, 0, 255), 10.f, size.height);
+        m_fields->vignetteLeft->setPosition({0.f, 0.f});
+        m_fields->visualLayer->addChild(m_fields->vignetteLeft);
 
-        auto right = CCLayerColor::create(ccc4(0, 0, 0, 255), 10.f, size.height);
-        right->setPosition({size.width - 10.f, 0.f});
-        right->setOpacity(0);
-        m_fields->visualLayer->addChild(right);
+        m_fields->vignetteRight = CCLayerColor::create(ccc4(0, 0, 0, 255), 10.f, size.height);
+        m_fields->vignetteRight->setPosition({size.width - 10.f, 0.f});
+        m_fields->visualLayer->addChild(m_fields->vignetteRight);
 
         return true;
     }
@@ -92,14 +86,15 @@ class $modify(DLSS5PlayLayer, PlayLayer) {
 
         m_fields->elapsed += dt;
         const float pulse = 0.88f + 0.12f * std::sin(m_fields->elapsed * 1.7f);
-
         m_fields->colorGrade->setColor(tint);
-        m_fields->colorGrade->setOpacity(
-            static_cast<GLubyte>(std::round(18.f * intensity * pulse))
-        );
-        m_fields->bloomWash->setOpacity(
-            static_cast<GLubyte>(std::round(7.f * intensity * pulse))
-        );
+        m_fields->colorGrade->setOpacity(static_cast<GLubyte>(std::round(18.f * intensity * pulse)));
+        m_fields->bloomWash->setOpacity(static_cast<GLubyte>(std::round(7.f * intensity * pulse)));
+
+        const auto vignette = static_cast<GLubyte>(std::round(42.f * intensity));
+        m_fields->vignetteTop->setOpacity(vignette);
+        m_fields->vignetteBottom->setOpacity(vignette);
+        m_fields->vignetteLeft->setOpacity(vignette);
+        m_fields->vignetteRight->setOpacity(vignette);
     }
 };
 
