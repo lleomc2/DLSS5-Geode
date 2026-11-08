@@ -1,0 +1,11 @@
+{
+  "geode": "v5.11.2",
+  "gd": {
+    "android": "2.2081"
+  },
+  "id": "lleomc2.dlss5-geode",
+  "name": "DLSS5 Geode",
+  "version": "v0.1.0",
+  "developer": "lleomc2",
+  "description": "Experimental real-time visual effects inspired by modern rendering. Not NVIDIA DLSS."
+}
